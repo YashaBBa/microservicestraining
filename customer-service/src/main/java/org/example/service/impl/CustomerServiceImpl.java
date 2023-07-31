@@ -31,7 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.saveAndFlush(customer);
         // todo:: check if customer is fraudster
         FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
-                "http://localhost:8080/api/v1/fraud-check/{customerId}",
+                "http://GATEWAY/api/v1/fraud-check/{customerId}",
                 FraudCheckResponse.class,
                 customer.getId()
         );
