@@ -1,13 +1,20 @@
 package org.example.service.impl;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.domain.Customer;
 import org.example.domain.CustomerRegistrationRequest;
+import org.example.dto.FraudCheckResponse;
 import org.example.repo.CustomerRepository;
 import org.example.service.CustomerService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
-public record CustomerServiceImpl(CustomerRepository customerRepository) implements CustomerService {
+@RequiredArgsConstructor
+public class CustomerServiceImpl implements CustomerService {
+    private final RestTemplate restTemplate;
+    private final CustomerRepository customerRepository;
 
 
     @Override
@@ -21,7 +28,17 @@ public record CustomerServiceImpl(CustomerRepository customerRepository) impleme
         // todo:: check if email valid
         // todo:: check if email not taken
         // todo:: check if customer already in db
-        customerRepository.save(customer);
+        customerRepository.saveAndFlush(customer);
+        // todo:: check if customer is fraudster
+        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
+                "http://localhost:8080/api/v1/fraud-check/{customerId}",
+                FraudCheckResponse.class,
+                customer.getId()
+        );
+        if(fraudCheckResponse.getIsFraudster()){
+            throw new IllegalStateException("Fraudster");
+        }
+
 
     }
 }

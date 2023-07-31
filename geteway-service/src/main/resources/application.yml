@@ -15,9 +15,9 @@ spring:
           predicates:
             - Path=/api/v1/customers/**
         - id: fraud
-          uri: lb://fraud
+          uri: http://localhost:8082/
           predicates:
-            - Path=/api/v1/frauds/**
+            - Path=/api/v1/fraud-check/**
   config:
     import: "optional:configserver:${CONFIG_URI:http://localhost:8888}"
 
